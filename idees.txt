@@ -1,0 +1,110 @@
+Epreuves type salle de défi -> débloque la prochaine salle en faisant la précédente.
+Un hash -> une clef
+
+Lore: Tu te réveilles dans un bureau de travail, tu sors de ton bureau mais il ne semble y avoir personne. Tu te souviens travailler ici mais des éléments semblent bizarre. Tu te rends compte également que certains accès te sont refusés et que tu ne peux pas sortir de l'immeuble. Ton but: essayer de comprendre ce qui s'est passé et pouvoir t'échapper.
+
+Fin du lore: En ouvrant la porte de sortie de l'immeuble, tu retombes sur ton bureau. L'ordinateur sur ton bureau de travail s'allume et t'ordonnes de te réveiller. Tout ça n'était qu'un mauvais rêve. Tu te réveilles affalé dans un pouf de la salle de repos de ton travail. Tu songes à prendre des congés...
+
+Idées de salle:
+
+	- [ ] Brute force room: un hash est donné retrouver l'algorithme utilisé et essayé de trouver quel input correspond à ce hash.
+	Des indices seront données pour réduire l'espace de recherche sinon ça prend un temps infini.
+	Skill: programmation bash if et for loop
+
+	- [x] Une aiguille dans une botte de foin: trouver le bon fichier parmis une multitude de fichiers et dossiers.
+	Le joueur devra trouver le bon fichier avec les spécificités demandées.
+	Hasher le bon dossier pour trouver la clef.
+	Lore: document des RH mais ils n'ont pas triés leurs affaires or l'entreprise possédaient plus de ~5000 employés.
+	(Peut-être rajouter une étape tel que tu dois triés les dossiers avant de chercher le bon)
+	Skill: mv; cat; grep; itérateurs; ls
+
+	# Intégré dans le mini-jeu "une aiguille dans une botte de foin"
+	(- [x] De mauvais développeur: Certains développeurs avaient une facheuse tendance à mettre en brut des données sensibles dans leurs programmes.
+	Données pouvant être retrouvées dans les exécutables. Retrouve le mot de passe du serveur pour te connecter au serveur de l'entreprise.
+	Skill: hexdump; string; lecture d'éxecutable)
+
+Draft idées:
+
+    1) Le labyrinthe de liens
+    - Pitch: Tout semble identique, mais certains chemins mènent en boucle.
+    - Mécanique: Génère beaucoup de symlinks qui pointent les uns vers les autres; un seul “vrai” fichier contient l’info brute.
+    - Skills: find, readlink -f, file, grep, xargs.
+    - Validation: lire le fichier réel “clé.txt”, puis hasher son contenu pour obtenir la clef.
+    - Implémentation: crée un arbre avec des symlinks (find -L pour détecter les boucles), un seul fichier non-lien avec la donnée à extraire.
+
+    2) Archéologie Git
+    - Pitch: Le secret a été “supprimé” des sources… mais pas de l’historique.
+    - Mécanique: Un repo Git dans lequel un commit ancien contient un mot de passe; le HEAD l’a effacé.
+    - Skills: git log, git show, git grep, git bisect (optionnel).
+    - Validation: hasher la valeur retrouvée.
+    - Implémentation: init, commit avec secret, commit suivant qui l’enlève; indices via README.
+
+    3) Le coffre des encodages
+    - Pitch: Le fichier est “crypté” selon plusieurs couches.
+    - Mécanique: Chaîne d’encodages base64 -> gzip -> xxd -> rot13 (par exemple). L’ordre est à deviner via des indices.
+    - Skills: base64, gzip, xxd -r, tr, file.
+    - Validation: une fois le texte en clair obtenu, le hasher.
+    - Implémentation: produis un fichier final; écris des indices épars (ex: “H4sI” -> signature gzip/base64).
+
+    4) L’usine à logs
+    - Pitch: Une alerte critique s’est produite à un instant précis au milieu de milliers de logs.
+    - Mécanique: Dossiers de logs compressés/rotatés; chercher une ligne spécifique par motif, puis extraire un champ.
+    - Skills: zgrep, grep -E, awk, cut, sort, uniq.
+    - Validation: hasher l’horodatage exact ou l’ID extrait.
+    - Implémentation: génère des logs plausibles, une entrée “CRITICAL id=XYZ …” cachée quelque part.
+
+    5) Dédoublons les doublons
+    - Pitch: Les RH ont créé des copies infinies; seul un original est “le’” document.
+    - Mécanique: Beaucoup de fichiers dupliqués par contenu, noms différents; l’original est celui qui n’a qu’un seul hardlink/inode.
+    - Skills: md5sum/sha256sum, ls -li, find -samefile, awk.
+    - Validation: hasher le contenu de l’original.
+    - Implémentation: crée N copies (hard links et copies réelles), un seul vraiment unique.
+
+    6) Permutations de permissions
+    - Pitch: Le lecteur ne peut pas tout lire; il faut d’abord identifier ce qui est lisible.
+    - Mécanique: Mélange de fichiers/dossiers avec perms diverses; seuls les “readable par l’utilisateur courant” contiennent les indices.
+    - Skills: find -readable, test -r, chmod (limité), ls -l.
+    - Validation: concaténer le contenu de tous les lisibles dans l’ordre (tri) puis hasher.
+    - Implémentation: génère un arbre; ne demande pas de sudo.
+
+    7) Paroles masquées
+    - Pitch: Un texte a été “reformatté”; les mots-clés sont visibles seulement via la bonne transformation.
+    - Mécanique: Texte bruité (espaces, ponctuation, casse); il faut extraire des tokens via regex et transformer.
+    - Skills: grep -Po, sed, tr, awk.
+    - Validation: assembler des tokens in-order puis hasher.
+    - Implémentation: fichier avec règles données dans un README (ex: “Ne garder que les mots en CapitalCase, sans chiffres”).
+
+    8) La boîte russe (archives imbriquées)
+    - Pitch: Une boîte dans une boîte… etc.
+    - Mécanique: tar.gz -> zip -> tar.zst -> … imbriquées; ordre à deviner avec file.
+    - Skills: tar, unzip, zstd, file.
+    - Validation: le fichier final contient la valeur à hasher.
+    - Implémentation: script qui génère les archives à emboîtements avec quelques leurres.
+
+    9) Index inversé
+    - Pitch: T’as un gros “catalogue” CSV de 5000 employés; il faut retrouver l’entrée qui matche des critères.
+    - Mécanique: Champs: nom, service, badge, etc. Indices dans plusieurs fichiers qui filtrent progressivement (ex: service=IT, badge pair, checksum de l’ID).
+    - Skills: csvcut/csvgrep (si dispo) ou awk, cut, grep, sort, wc -l.
+    - Validation: hasher le badge final.
+    - Implémentation: génère CSV propret, indices en “morceaux”.
+
+    10) Le pipeline exact
+    - Pitch: On donne un hash-cible et des transformations autorisées; il faut construire le pipeline exact qui reproduit le hash.
+    - Mécanique: À partir d’un fichier source, tester des combinaisons (tr, cut, head/tail, sort -u, sed -n ‘p’); un seul pipeline donne le hash.
+    - Skills: composition de commandes, redirections, pipefail.
+    - Validation: quand le hash du résultat matche, tu as la clef.
+    - Implémentation: préparer la solution officielle; le joueur a la liste d’outils “autorisés”
+
+    11) Les horloges folles (crontab)
+    - Pitch: On trouve un crontab et un log partiel; il faut déduire quand la tâche s’exécute et retrouver la sortie d’une certaine exécution.
+    - Mécanique: Fichiers crontab avec “*/5 9-17 1-5 …”, logs tronqués; reconstituer l’occurrence cible.
+    - Skills: compréhension crontab, dateutils, awk, grep.
+    - Validation: hasher la ligne de sortie à cet instant.
+    - Implémentation: générer un crontab et un log “journalisé” avec timestamps.
+
+    12) La salle des faux binaires
+    - Pitch: Des programmes “program1, program2…” existent; l’un contient une phrase en clair dans la section .rodata.
+    - Mécanique: Plusieurs exécutables factices; il faut strings/hexdump pour extraire un secret.
+    - Skills: strings, hexdump -C, grep.
+    - Validation: hasher le secret.
+    - Implémentation: compiler ou faker des binaires/ELF; laisser de fausses pistes.

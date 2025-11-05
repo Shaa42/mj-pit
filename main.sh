@@ -19,7 +19,7 @@ elif [[ "$input" == "--hello" ]] then
 	echo "Hello world"
 
 elif [[ "$input" =~ ^[0-9]+$ ]] then
-	calcul "$input"
+	calcul $((input + 1))
 
 else
 	echo "Input non valide"
