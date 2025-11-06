@@ -13,7 +13,7 @@ Ce dépôt contient une série de mini-jeux/salles de défis en ligne de command
 Remplace l’URL par l’adresse de ton dépôt.
 
 ```bash
-git clone https://github.com/Shaa42/met-tools.git
+git clone https://github.com/Shaa42/mj-pit.git
 cd mj-pit
 ```
 
