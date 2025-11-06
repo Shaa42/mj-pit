@@ -1,0 +1,11 @@
+Le but de cette salle est de trouver un fichier laissé par mégarde par un programmeur maladroit dans les fichiers du département des Ressources Humaines.
+
+Tu pourras trouver ce fichier en explorant les répertoires et en utilisant les commandes de base du terminal Linux.
+
+Voici quelques commandes qui pourraient t'être utiles :
+- `ls` : liste les fichiers et dossiers dans le répertoire courant.
+- `cd <nom_du_dossier>` : change le répertoire courant pour le dossier spécifié
+- `strings <nom_du_fichier>` : affiche les chaînes de caractères lisibles dans un fichier binaire.
+
+Objectif final:
+Trouver le fichier caché et lire son contenu pour découvrir le mot de passe laissé en clair par le programmeur dans son code.

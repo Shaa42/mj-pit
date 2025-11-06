@@ -1,0 +1,14 @@
+Le but de cette salle est de retrouver une chaîne originale qui a été transformée via plusieurs encodages/systèmes de substitution par un développeur bien trop créatif.
+
+Tu disposes de fichiers et de scripts qui réalisent différentes conversions (Base64, Hexadécimal, ROT13, Morse). À toi de comprendre l’ordre des transformations et de reconstruire le message clair. Une fois le message retrouvé, il pourra te servir (par exemple) à valider ou générer la clé du niveau.
+
+Voici quelques commandes qui pourraient t'être utiles :
+- `cat <fichier>` : affiche le contenu d’un fichier texte.
+- `base64` : Permet de manipuler des chaines de caractères en base64.
+- `xxd` : Peut permettre de convertir des données en hexadécimal et vice versa.
+- `tr 'A-Za-z' 'N-ZA-Mn-za-m'` : applique ROT13 à une chaîne lue sur l’entrée standard.
+- `grep`, `awk`, `sed` : manipulent et filtrent du texte si besoin pour isoler une partie précise.
+- `./morse_decode.sh "<code_morse>"` : décode du Morse.
+
+Objectif final :
+Reconstituer le message initial en clair et le mettre dans `reponse.txt`.
