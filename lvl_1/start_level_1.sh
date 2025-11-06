@@ -99,8 +99,12 @@ fi
 
 # Choix d'un dossier aléatoire et copie du programme1 dedans
 random_dir="$(pick_rd_dir "./cabinet")" || exit 1
-echo "Dossier aléatoire choisi: $random_dir"
-cp ../assets/program1 "${random_dir}"
+# echo "Dossier aléatoire choisi: $random_dir"
+cp ../assets/l1/p1 "${random_dir}"
 
 # Renommage aléatoire des fichiers
 rename_files_random "./cabinet" || { echo "Rename failed."; exit 1; }
+echo ""
+
+# Affichage de l'instruction
+cat instructions.txt
